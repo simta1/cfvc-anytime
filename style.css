@@ -161,6 +161,17 @@ th {
     z-index: 10;
 }
 
+.header-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.1s ease;
+}
+
+.header-link:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
 tr:nth-child(even) {
     background: rgba(255, 255, 255, 0.015);
 }
@@ -219,3 +230,27 @@ tr:last-child td {
 .rating-cm { color: #c084fc; }
 .rating-master { color: #fb923c; }
 .rating-gm { color: #f87171; }
+
+.anytime-row {
+    background: rgba(56, 189, 248, 0.05) !important;
+}
+
+.anytime-row:hover {
+    background: rgba(56, 189, 248, 0.08) !important;
+}
+
+.anytime-check {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+#handleBody:empty::after,
+#contestBody:empty::after {
+    content: "No data available";
+    display: block;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    width: 300%;
+}

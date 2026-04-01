@@ -44,6 +44,9 @@
                     <button class="btn-outline" id="Div. 1" onclick="toggleFilter(this.id)">Div. 1</button>
                     <button class="btn-outline" id="Div. 2" onclick="toggleFilter(this.id)">Div. 2</button>
                     <button class="btn-outline" id="Div. 3" onclick="toggleFilter(this.id)">Div. 3</button>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem; font-size: 0.9rem; color: var(--text-muted); cursor: pointer;">
+                        <input type="checkbox" id="anytimeFilter"> Anytime Only
+                    </label>
                     <button class="btn-primary" style="margin-left: auto;" onclick="showContests()">Find
                         Contests</button>
                 </div>
@@ -53,7 +56,7 @@
                         <thead>
                             <tr>
                                 <th>Contest Name</th>
-                                <th style="width: 80px">ID</th>
+                                <th style="width: 100px; text-align: center;"><a href="https://codeforces-anytime.firebaseapp.com/" target="_blank" class="header-link">Anytime</a></th>
                             </tr>
                         </thead>
                         <tbody id="contestBody">

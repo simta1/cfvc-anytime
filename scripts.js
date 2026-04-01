@@ -139,17 +139,28 @@ async function showContests() {
         contestBody.innerHTML = "";
         let count = 0;
 
+        const anytimeFilter = document.getElementById("anytimeFilter").checked;
+
         Contests.forEach((name, id) => {
             let match = true;
             if (ConType.size > 0) {
                 match = Array.from(ConType).every(type => name.includes(type));
             }
 
-            if (match && !attendedContests.has(id) && ANYTIME_CONTESTS.has(id)) {
+            if (match && !attendedContests.has(id)) {
+                const inAnytime = ANYTIME_CONTESTS.has(id);
+                if (anytimeFilter && !inAnytime) return;
+
                 const row = document.createElement("tr");
+                if (inAnytime) row.classList.add("anytime-row");
+                
                 row.innerHTML = `
-                    <td><a href="https://codeforces.com/contest/${id}" target="_blank" class="contest-link">${name}</a></td>
-                    <td><span style="color: var(--text-secondary)">${id}</span></td>
+                    <td>
+                        <a href="https://codeforces.com/contest/${id}" target="_blank" class="contest-link">${name}</a>
+                    </td>
+                    <td style="text-align: center;">
+                        ${inAnytime ? '<span class="anytime-check">✓</span>' : ''}
+                    </td>
                 `;
                 contestBody.appendChild(row);
                 count++;

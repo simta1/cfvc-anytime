@@ -2,6 +2,8 @@ const Contests = new Map();
 const Handles = new Set();
 const ConType = new Set();
 
+const CACHE_DURATION = 3 * 60 * 60 * 1000; // 3 hours
+
 const TRASH_ICON = `
 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trash-icon">
     <path d="M3 6h18"></path>
@@ -17,6 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
         handleInp.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
                 addHandle();
+            }
+        });
+    }
+
+    const anytimeFilter = document.getElementById("anytimeFilter");
+    if (anytimeFilter) {
+        anytimeFilter.addEventListener("change", () => {
+            const contestBody = document.getElementById("contestBody");
+            if (contestBody && contestBody.children.length > 0) {
+                showContests();
             }
         });
     }
@@ -112,6 +124,44 @@ function toggleFilter(id) {
         btn.classList.add('btn-active');
         btn.classList.remove('btn-outline');
     }
+
+    const contestBody = document.getElementById("contestBody");
+    if (contestBody && contestBody.children.length > 0) {
+        showContests();
+    }
+}
+
+async function fetchUserStatusWithCache(handle) {
+    const cacheKey = `cf_status_${handle}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+        try {
+            const { timestamp, data } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_DURATION) {
+                return data;
+            }
+        } catch (e) {
+            console.error("Cache parsing error:", e);
+        }
+    }
+
+    const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}`);
+    const result = await response.json();
+
+    if (result.status === "OK") {
+        const solvedContestIds = result.result
+            .filter(sub => sub.verdict === "OK")
+            .map(sub => sub.contestId);
+
+        const cacheData = {
+            timestamp: Date.now(),
+            data: solvedContestIds
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        return solvedContestIds;
+    }
+    return [];
 }
 
 async function showContests() {
@@ -120,16 +170,9 @@ async function showContests() {
 
     const attendedContests = new Set();
     const fetches = Array.from(Handles).map(handle =>
-        fetch(`https://codeforces.com/api/user.status?handle=${handle}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "OK") {
-                    data.result.forEach(sub => {
-                        if (sub.verdict === "OK") {
-                            attendedContests.add(sub.contestId);
-                        }
-                    });
-                }
+        fetchUserStatusWithCache(handle)
+            .then(solvedContestIds => {
+                solvedContestIds.forEach(id => attendedContests.add(id));
             })
     );
 

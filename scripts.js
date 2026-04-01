@@ -187,7 +187,7 @@ async function showContests() {
         Contests.forEach((name, id) => {
             let match = true;
             if (ConType.size > 0) {
-                match = Array.from(ConType).every(type => name.includes(type));
+                match = Array.from(ConType).some(type => name.includes(type));
             }
 
             if (match && !attendedContests.has(id)) {
